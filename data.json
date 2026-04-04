@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-03-31",
+  "lastUpdate": "2026-04-04",
   "assetLabels": {
     "a_shares": "A股",
     "hk_stocks": "港股",
@@ -7267,6 +7267,35 @@
             "holdings": []
           },
           "total": null
+        }
+      }
+    },
+    "2026-04-04": {
+      "a_shares": {
+        "market_view": "验证测试：大盘震荡",
+        "key_logic": "测试自动推送",
+        "strategy": "观望为主",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": 50,
+            "holdings": [
+              "测试"
+            ]
+          },
+          "mid_term": {
+            "pct": 0,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": 0,
+            "holdings": []
+          },
+          "total": 50
         }
       }
     }
