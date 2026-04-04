@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天行全球资产跟踪仪表盘</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d29;
+    --bg-card: #1e2235;
+    --bg-hover: #2a2f45;
+    --bg-active: #2c3352;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0b4;
+    --text-muted: #6b7280;
+    --accent-green: #00c853;
+    --accent-red: #ef5350;
+    --accent-blue: #448aff;
+    --accent-yellow: #ffd740;
+    --accent-orange: #ff9100;
+    --accent-purple: #b388ff;
+    --border: #3a4162;
+    --shadow: 0 4px 24px rgba(0,0,0,0.5);
+    --icon-size-sm: 18px;
+    --icon-size-lg: 22px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 10;
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header-controls { display: flex; align-items: center; gap: 12px; }
+  .date-selector {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .date-selector:hover, .date-selector:focus {
+    border-color: var(--accent-blue);
+  }
+  .last-update { font-size: 11px; color: var(--text-muted); }
+
+  /* Summary Bar */
+  .summary-bar {
+    display: flex;
+    gap: 10px;
+    padding: 8px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    height: 62px;
+    overflow-x: auto;
+  }
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+  .summary-icon { font-size: 16px; display: flex; align-items: center; }
+  .summary-icon svg { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+  .summary-label { font-size: 12px; color: var(--text-muted); line-height: 1.2; }
+  .summary-value { font-size: 16px; font-weight: 700; line-height: 1.2; }
+
+  /* Main Layout */
+  .main-layout {
+    display: flex;
+    height: calc(100vh - 114px);
+  }
+
+  /* Left Panel - Asset List */
+  .left-panel {
+    width: 220px;
+    min-width: 220px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .left-panel-title {
+    padding: 12px 16px 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .asset-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .asset-item:hover { background: var(--bg-hover); }
+  .asset-item.active {
+    background: var(--bg-active);
+    border-left-color: var(--accent-blue);
+  }
+  .asset-item-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .asset-item-emoji { font-size: 16px; flex-shrink: 0; display: flex; align-items: center; }
+  .asset-item-emoji svg { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+  .asset-item-name { font-size: 13px; font-weight: 500; white-space: nowrap; }
+  .asset-item-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .asset-item-pos {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .asset-item-change {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Right Panel - Detail */
+  .right-panel {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+  }
+  .right-panel > * {
+    margin-bottom: 20px;
+  }
+  .right-panel > *:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Detail Header */
+  .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .detail-title {
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .detail-title .emoji { font-size: 24px; display: flex; align-items: center; }
+  .detail-title .emoji svg { width: var(--icon-size-lg); height: var(--icon-size-lg); }
+  .detail-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge-high { background: rgba(255,23,68,0.15); color: var(--accent-red); }
+  .badge-mid { background: rgba(255,145,0,0.15); color: var(--accent-orange); }
+  .badge-low { background: rgba(0,200,83,0.15); color: var(--accent-green); }
+  .badge-zero { background: rgba(107,114,128,0.15); color: var(--text-muted); }
+  .badge-na { background: rgba(107,114,128,0.1); color: var(--text-muted); }
+
+  .change-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+  .change-up { background: rgba(0,200,83,0.12); color: var(--accent-green); }
+  .change-down { background: rgba(255,23,68,0.12); color: var(--accent-red); }
+  .change-same { background: rgba(107,114,128,0.1); color: var(--text-muted); }
+
+  .strategy-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .strat-defense { background: rgba(255,23,68,0.15); color: var(--accent-red); }
+  .strat-bullish { background: rgba(0,200,83,0.15); color: var(--accent-green); }
+  .strat-watch { background: rgba(255,145,0,0.15); color: var(--accent-orange); }
+  .strat-change {
+    background: rgba(255,215,64,0.15);
+    color: var(--accent-yellow);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  /* Info Cards Row */
+  .info-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .info-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: border-color 0.2s;
+  }
+  .info-card:hover {
+    border-color: rgba(68,138,255,0.3);
+  }
+  .info-card-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .info-card-content {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Operations Display */
+  .ops-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .op-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .op-chip-buy {
+    background: rgba(0,200,83,0.1);
+    border: 1px solid rgba(0,200,83,0.25);
+    color: var(--accent-green);
+  }
+  .op-chip-sell {
+    background: rgba(255,23,68,0.1);
+    border: 1px solid rgba(255,23,68,0.25);
+    color: var(--accent-red);
+  }
+  .op-chip-none {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  /* Holdings Tags */
+  .holdings-section { margin-top: 4px; }
+  .holdings-group-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    margin-top: 8px;
+  }
+  .holdings-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .htag {
+    padding: 3px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    background: rgba(68,138,255,0.12);
+    color: var(--accent-blue);
+    border: 1px solid rgba(68,138,255,0.2);
+  }
+  .htag-new {
+    background: rgba(0,200,83,0.15);
+    color: var(--accent-green);
+    border-color: rgba(0,200,83,0.3);
+  }
+  .htag-removed {
+    background: rgba(255,23,68,0.12);
+    color: var(--accent-red);
+    border-color: rgba(255,23,68,0.2);
+    text-decoration: line-through;
+  }
+
+  /* Section Titles */
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::before {
+    content: '';
+    width: 3px;
+    height: 16px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+  }
+
+  /* Chart */
+  .detail-chart { width: 100%; height: 280px; min-height: 280px; background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+  /* Matrix */
+  .matrix-wrap {
+    background: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 14px;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .matrix-table th {
+    padding: 6px 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+    position: sticky;
+    top: 0;
+    white-space: nowrap;
+  }
+  .matrix-table td {
+    padding: 6px 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(45,50,72,0.3);
+    color: var(--text-secondary);
+  }
+  .matrix-table td:first-child, .matrix-table th:first-child { text-align: left; }
+  .matrix-table td:nth-child(2), .matrix-table th:nth-child(2) { text-align: left; }
+  .dot-held { display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent-blue); }
+  .dot-new { display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 4px rgba(0,200,83,0.5); }
+  .dot-removed { display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent-red);box-shadow:0 0 4px rgba(255,23,68,0.5); }
+  .dot-empty { display:inline-block;width:9px;height:9px;border-radius:50%;background:rgba(107,114,128,0.2); }
+  .matrix-legend { display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--text-muted); }
+  .matrix-legend span { display:flex;align-items:center;gap:4px; }
+
+  .global-chart { width: 100%; height: 400px; min-height: 400px; background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border); }
+  .timeline-group { margin-bottom: 20px; }
+  .timeline-group-header { font-size:15px;font-weight:600;color:var(--accent-blue);margin-bottom:10px;display:flex;align-items:center;gap:8px; }
+  .timeline-item { position:relative;padding:10px 14px;margin-bottom:6px;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+  .timeline-item::before { content:'';position:absolute;left:-20px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--accent-blue);border:2px solid var(--bg-primary); }
+  .timeline-item.changed::before { background:var(--accent-yellow); }
+  .timeline-date { font-size:11px;color:var(--text-muted);margin-bottom:3px; }
+  .timeline-text { font-size:12px;color:var(--text-secondary); }
+  .timeline-strategy { margin-top:3px;font-size:11px; }
+
+  /* Log Table */
+  .log-table { width:100%;border-collapse:collapse; }
+  .log-table th { text-align:left;padding:8px 12px;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg-card);position:sticky;top:0; }
+  .log-table td { padding:8px 12px;font-size:12px;border-bottom:1px solid rgba(45,50,72,0.5);color:var(--text-secondary); }
+  .log-table tr:hover td { background:var(--bg-hover); }
+  .op-buy-tag { color:var(--accent-green);padding:2px 10px;background:rgba(0,200,83,0.1);border-radius:12px;font-size:11px;font-weight:600; }
+  .op-sell-tag { color:var(--accent-red);padding:2px 10px;background:rgba(255,23,68,0.1);border-radius:12px;font-size:11px;font-weight:600; }
+  .filter-bar { display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap; }
+  .filter-btn { padding:5px 12px;border-radius:6px;font-size:12px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;transition:all 0.2s; }
+  .filter-btn.active,.filter-btn:hover { border-color:var(--accent-blue);color:var(--accent-blue);background:rgba(68,138,255,0.1); }
+  .no-data { text-align:center;padding:40px;color:var(--text-muted);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:10px; }
+  .no-data svg { width:32px;height:32px;opacity:0.4; }
+
+  /* Asset Pool */
+  .pool-entry {
+    background: linear-gradient(135deg, rgba(68,138,255,0.08), rgba(179,136,255,0.08));
+    border-bottom: 1px solid var(--border);
+  }
+  .pool-entry .asset-item-name { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600; }
+  .pool-tabs { display:flex; gap:0; background:var(--bg-card); border-radius:10px; border:1px solid var(--border); overflow:hidden; }
+  .pool-tab { flex:1; padding:10px 16px; text-align:center; font-size:13px; font-weight:600; cursor:pointer; border:none; background:transparent; color:var(--text-muted); transition:all 0.2s; }
+  .pool-tab.active { background:rgba(68,138,255,0.15); color:var(--accent-blue); }
+  .pool-tab:hover:not(.active) { background:var(--bg-hover); color:var(--text-primary); }
+  .pool-search-row { display:flex; gap:8px; align-items:center; }
+  .pool-search { flex:1; background:var(--bg-card); border:1px solid var(--border); color:var(--text-primary); padding:8px 14px; border-radius:8px; font-size:13px; outline:none; }
+  .pool-search::placeholder { color:var(--text-muted); }
+  .pool-search:focus { border-color:var(--accent-blue); }
+  .pool-risk-filters { display:flex; gap:4px; }
+  .pool-risk-btn { padding:5px 12px; border-radius:6px; font-size:12px; font-weight:600; border:1px solid var(--border); background:var(--bg-card); color:var(--text-muted); cursor:pointer; transition:all 0.15s; }
+  .pool-risk-btn.active { border-color:var(--accent-blue); color:var(--accent-blue); background:rgba(68,138,255,0.1); }
+  .pool-group { margin-bottom:8px; }
+  .pool-group-header { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--bg-card); border-radius:8px; border:1px solid var(--border); cursor:pointer; transition:all 0.15s; }
+  .pool-group-header:hover { background:var(--bg-hover); }
+  .pool-group-title { font-size:14px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:8px; }
+  .pool-group-count { font-size:11px; color:var(--text-muted); background:var(--bg-primary); padding:2px 8px; border-radius:10px; }
+  .pool-group-arrow { color:var(--text-muted); font-size:12px; transition:transform 0.2s; }
+  .pool-group-arrow.collapsed { transform:rotate(-90deg); }
+  .pool-group-body { padding:4px 0 8px; }
+  .pool-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .pool-table th { padding:6px 10px; text-align:left; color:var(--text-muted); font-weight:500; font-size:11px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  .pool-table td { padding:7px 10px; border-bottom:1px solid rgba(45,50,72,0.3); color:var(--text-secondary); }
+  .pool-table tr:hover td { background:var(--bg-hover); }
+  .pool-table tr.pool-new td { color:var(--accent-green); }
+  .pool-table tr.pool-new { border-left:3px solid var(--accent-green); }
+  .pool-table tr.pool-removed td { color:var(--text-muted); text-decoration:line-through; background:rgba(255,23,68,0.04); }
+  .pool-table tr.pool-removed { border-left:3px solid var(--accent-red); }
+  .pool-table tr.pool-removed-old td { color:var(--text-muted); opacity:0.5; }
+  .pool-new-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; background:rgba(0,200,83,0.15); color:var(--accent-green); margin-left:6px; }
+  .pool-removed-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; background:rgba(255,23,68,0.15); color:var(--accent-red); margin-left:6px; }
+  .pool-toggle { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); cursor:pointer; user-select:none; }
+  .pool-toggle input { accent-color:var(--accent-blue); cursor:pointer; }
+  .pool-header-meta { display:flex; align-items:center; gap:16px; }
+  .pool-last-update { font-size:12px; color:var(--text-muted); }
+  .risk-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; text-align:center; min-width:28px; }
+  .risk-R1 { background:rgba(0,200,83,0.12); color:#4caf50; }
+  .risk-R2 { background:rgba(0,200,83,0.12); color:#66bb6a; }
+  .risk-R3 { background:rgba(255,145,0,0.12); color:var(--accent-orange); }
+  .risk-R4 { background:rgba(255,145,0,0.15); color:#ff6d00; }
+  .risk-R5 { background:rgba(255,23,68,0.12); color:var(--accent-red); }
+  .pool-stats { display:flex; gap:16px; padding:12px 16px; background:var(--bg-card); border-radius:10px; border:1px solid var(--border); flex-wrap:wrap; box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+  .pool-stat { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); }
+  .pool-stat b { color:var(--text-primary); font-size:14px; }
+
+  ::-webkit-scrollbar { width:6px;height:6px; }
+  ::-webkit-scrollbar-track { background:var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background:var(--border);border-radius:3px; }
+
+  @media (max-width: 900px) {
+    .main-layout { flex-direction: column; height: auto; }
+    .left-panel { width: 100%; min-width: auto; flex-direction: row; overflow-x: auto; overflow-y: hidden; height: 60px; min-height: 60px; }
+    .left-panel-title { display: none; }
+    .asset-item { border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+    .asset-item.active { border-bottom-color: var(--accent-blue); border-left-color: transparent; }
+    .right-panel { height: auto; overflow-y: visible; }
+    body { overflow: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>天行全球资产跟踪仪表盘</h1>
+  <div class="header-controls">
+    <select class="date-selector" id="dateSelector" onchange="switchDate(this.value)"></select>
+    <span class="last-update" id="lastUpdate"></span>
+  </div>
+</div>
+<div class="summary-bar" id="summaryBar"></div>
+
+<div class="main-layout">
+  <div class="left-panel" id="leftPanel"></div>
+  <div class="right-panel" id="rightPanel"></div>
+</div>
+
+<script>
+const ASSET_CONFIG = {
+  a_shares:     { icon: 'flag', color: '#ef5350', name: 'A股' },
+  hk_stocks:    { icon: 'landmark', color: '#ff9100', name: '港股' },
+  us_stocks:    { icon: 'dollar-sign', color: '#448aff', name: '美股' },
+  india_stocks: { icon: 'globe', color: '#66bb6a', name: '印度股市' },
+  reits:        { icon: 'building-2', color: '#b388ff', name: 'REITs' },
+  oil:          { icon: 'droplets', color: '#ff9100', name: '石油' },
+  copper:       { icon: 'pickaxe', color: '#ffd740', name: '铜' },
+  gold:         { icon: 'coins', color: '#ffd740', name: '黄金' },
+  cn_bonds:     { icon: 'landmark', color: '#4dd0e1', name: '国内债券' },
+  us_bonds:     { icon: 'trending-up', color: '#66bb6a', name: '美债' },
+  forex:        { icon: 'arrow-left-right', color: '#ce93d8', name: '汇率' },
+  bitcoin:      { icon: 'bitcoin', color: '#ff9100', name: '比特币' }
+};
+const ASSET_KEYS = Object.keys(ASSET_CONFIG);
+
+function assetIcon(key, size) {
+  const cfg = ASSET_CONFIG[key];
+  if (!cfg) return '';
+  const s = size || 'var(--icon-size-sm)';
+  return `<i data-lucide="${cfg.icon}" style="width:${s};height:${s};color:${cfg.color}"></i>`;
+}
+function refreshIcons() { if (window.lucide) lucide.createIcons(); }
+
+let DATA = null, currentDate = null, selectedAsset = 'a_shares';
+let detailChart = null, globalChart = null;
+let poolCurrency = 'rmb', poolSearch = '', poolRiskFilter = 'all', showRemoved = false;
+let collapsedGroups = new Set();
+
+async function loadData() {
+  try {
+    DATA = await (await fetch('data.json?t=' + Date.now())).json();
+    init();
+  } catch(e) {
+    document.getElementById('rightPanel').innerHTML = '<div class="no-data"><i data-lucide="alert-circle"></i>无法加载 data.json</div>'; refreshIcons();
+  }
+}
+
+function computeDetailHoldings() {
+  const dates = Object.keys(DATA.records).sort();
+  Object.keys(ASSET_CONFIG).forEach(assetKey => {
+    let prevMap = {};
+    dates.forEach(d => {
+      const a = DATA.records[d]?.[assetKey];
+      if (!a) return;
+      const pos = a.positions;
+      if (!pos) return;
+
+      if (pos.detail_holdings && pos.detail_holdings.length > 0) {
+        const map = {};
+        pos.detail_holdings.forEach(h => {
+          const m = h.match(/^(.+?)\((\d+)%\)$/);
+          if (m) map[m[1]] = parseInt(m[2]);
+        });
+        if (Object.keys(map).length > 0) {
+          prevMap = { ...map };
+          return;
+        }
+      }
+
+      if (Object.keys(prevMap).length === 0) return;
+
+      const curMap = { ...prevMap };
+      (a.operations?.buys || []).forEach(b => {
+        if (curMap[b.target] !== undefined) {
+          curMap[b.target] += b.pct;
+        } else {
+          curMap[b.target] = b.pct;
+        }
+      });
+      (a.operations?.sells || []).forEach(s => {
+        if (curMap[s.target] !== undefined) {
+          curMap[s.target] -= s.pct;
+          if (curMap[s.target] <= 0) delete curMap[s.target];
+        }
+      });
+
+      pos.detail_holdings = Object.entries(curMap)
+        .map(([name, pct]) => `${name}(${pct}%)`);
+
+      prevMap = { ...curMap };
+    });
+  });
+}
+
+function init() {
+  const dates = Object.keys(DATA.records).sort();
+  currentDate = dates[dates.length - 1];
+  const sel = document.getElementById('dateSelector');
+  sel.innerHTML = dates.slice().reverse().map(d => `<option value="${d}">${d}</option>`).join('');
+  sel.value = currentDate;
+  document.getElementById('lastUpdate').textContent = '更新: ' + DATA.lastUpdate;
+  computeDetailHoldings();
+  renderAll();
+}
+
+function switchDate(d) { currentDate = d; renderAll(); }
+function selectAsset(key) {
+  selectedAsset = key;
+  renderLeftPanel();
+  if (key === '_pool') renderAssetPool();
+  else renderDetail();
+}
+
+function renderAll() {
+  renderSummary();
+  renderLeftPanel();
+  renderDetail();
+}
+
+function getPrevDate(d) {
+  const dates = Object.keys(DATA.records).sort();
+  const i = dates.indexOf(d);
+  return i > 0 ? dates[i-1] : null;
+}
+
+function getPosBadge(total) {
+  if (total == null) return { cls: 'badge-na', text: '未公布' };
+  if (total === 0) return { cls: 'badge-zero', text: '空仓' };
+  if (total <= 40) return { cls: 'badge-low', text: total+'%' };
+  if (total <= 80) return { cls: 'badge-mid', text: total+'%' };
+  return { cls: 'badge-high', text: total+'%' };
+}
+
+function getStratCls(dir) {
+  if (!dir) return 'strat-watch';
+  if (dir.includes('防守') || dir.includes('谨慎')) return 'strat-defense';
+  if (dir.includes('多') || dir.includes('进攻') || dir.includes('定投')) return 'strat-bullish';
+  return 'strat-watch';
+}
+
+// Summary
+function renderSummary() {
+  const rec = DATA.records[currentDate];
+  const prevDate = getPrevDate(currentDate);
+  const prevRec = prevDate ? DATA.records[prevDate] : null;
+  let totalOps=0,addC=0,reduceC=0;
+  let strats={'防守':0,'看多':0,'观望':0,'其他':0};
+  ASSET_KEYS.forEach(k => {
+    const a = rec[k]; if(!a)return;
+    totalOps += (a.operations?.buys||[]).length + (a.operations?.sells||[]).length;
+    if(prevRec?.[k]) {
+      const p=prevRec[k].positions?.total, c=a.positions?.total;
+      if(c!=null&&p!=null){ if(c>p)addC++; else if(c<p)reduceC++; }
+    }
+    const dir=a.strategy_direction||'';
+    if(dir.includes('防守'))strats['防守']++;
+    else if(dir.includes('多')||dir.includes('进攻'))strats['看多']++;
+    else if(dir.includes('观望')||dir.includes('空仓'))strats['观望']++;
+    else strats['其他']++;
+  });
+  const mainS=Object.entries(strats).sort((a,b)=>b[1]-a[1])[0][0];
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="summary-item"><span class="summary-icon"><i data-lucide="activity" style="width:var(--icon-size-sm);height:var(--icon-size-sm);color:var(--accent-blue)"></i></span><div><div class="summary-label">操作数</div><div class="summary-value">${totalOps}</div></div></div>
+    <div class="summary-item"><span class="summary-icon"><i data-lucide="trending-up" style="width:var(--icon-size-sm);height:var(--icon-size-sm);color:var(--accent-green)"></i></span><div><div class="summary-label">加仓</div><div class="summary-value" style="color:var(--accent-green)">${addC}</div></div></div>
+    <div class="summary-item"><span class="summary-icon"><i data-lucide="trending-down" style="width:var(--icon-size-sm);height:var(--icon-size-sm);color:var(--accent-red)"></i></span><div><div class="summary-label">减仓</div><div class="summary-value" style="color:var(--accent-red)">${reduceC}</div></div></div>
+    <div class="summary-item"><span class="summary-icon"><i data-lucide="target" style="width:var(--icon-size-sm);height:var(--icon-size-sm);color:var(--accent-yellow)"></i></span><div><div class="summary-label">主导策略</div><div class="summary-value" style="font-size:14px">${mainS}</div></div></div>
+    <div class="summary-item"><span class="summary-icon"><i data-lucide="calendar-days" style="width:var(--icon-size-sm);height:var(--icon-size-sm);color:var(--accent-purple)"></i></span><div><div class="summary-label">天数</div><div class="summary-value">${Object.keys(DATA.records).length}</div></div></div>`;
+  refreshIcons();
+}
+
+// Left Panel
+function renderLeftPanel() {
+  const rec = DATA.records[currentDate];
+  const prevDate = getPrevDate(currentDate);
+  const prevRec = prevDate ? DATA.records[prevDate] : null;
+  const poolActive = selectedAsset === '_pool' ? ' active' : '';
+  let poolCount = 0;
+  if (DATA.assetPool) {
+    ['rmb','usd'].forEach(c => { Object.values(DATA.assetPool[c]||{}).forEach(arr => { poolCount += arr.filter(i=>!i.removedDate).length; }); });
+  }
+  let html = `<div class="pool-entry"><div class="asset-item${poolActive}" onclick="selectAsset('_pool')">
+    <div class="asset-item-left"><span class="asset-item-emoji"><i data-lucide="briefcase" style="width:var(--icon-size-sm);height:var(--icon-size-sm);color:var(--accent-blue)"></i></span><span class="asset-item-name">资产跟踪池</span></div>
+    <div class="asset-item-right"><span style="font-size:11px;color:var(--text-muted)">${poolCount}只</span></div>
+  </div></div>`;
+  html += '<div class="left-panel-title">每日跟踪</div>';
+  ASSET_KEYS.forEach(k => {
+    const cfg = ASSET_CONFIG[k];
+    const a = rec[k];
+    const total = a?.positions?.total;
+    const pb = getPosBadge(total);
+    const active = k === selectedAsset ? ' active' : '';
+
+    let changeHtml = '';
+    if (prevRec?.[k]?.positions?.total != null && total != null) {
+      const diff = total - prevRec[k].positions.total;
+      if (diff > 0) changeHtml = `<span class="asset-item-change" style="color:var(--accent-green)">↑${diff}</span>`;
+      else if (diff < 0) changeHtml = `<span class="asset-item-change" style="color:var(--accent-red)">↓${diff}</span>`;
+    }
+
+    html += `<div class="asset-item${active}" onclick="selectAsset('${k}')">
+      <div class="asset-item-left">
+        <span class="asset-item-emoji">${assetIcon(k)}</span>
+        <span class="asset-item-name">${cfg.name}</span>
+      </div>
+      <div class="asset-item-right">
+        <span class="asset-item-pos ${pb.cls}">${pb.text}</span>
+        ${changeHtml}
+      </div>
+    </div>`;
+  });
+  document.getElementById('leftPanel').innerHTML = html;
+  refreshIcons();
+}
+
+// Right Panel Detail
+function renderDetail() {
+  if (selectedAsset === '_pool') { renderAssetPool(); return; }
+  const key = selectedAsset;
+  const cfg = ASSET_CONFIG[key];
+  const a = DATA.records[currentDate]?.[key];
+  const prevDate = getPrevDate(currentDate);
+  const prev = prevDate ? DATA.records[prevDate]?.[key] : null;
+
+  if (!a) {
+    document.getElementById('rightPanel').innerHTML = `<div class="no-data"><i data-lucide="inbox"></i>${cfg.name} 暂无数据</div>`; refreshIcons();
+    return;
+  }
+
+  const total = a.positions?.total;
+  const pb = getPosBadge(total);
+  const dir = a.strategy_direction || '';
+  const stratCls = getStratCls(dir);
+
+  // Position change
+  let posChangeHtml = '';
+  if (prev?.positions?.total != null && total != null) {
+    const diff = total - prev.positions.total;
+    if (diff > 0) posChangeHtml = `<span class="change-tag change-up">↑ +${diff}%</span>`;
+    else if (diff < 0) posChangeHtml = `<span class="change-tag change-down">↓ ${diff}%</span>`;
+    else posChangeHtml = `<span class="change-tag change-same">→ 不变</span>`;
+  }
+
+  // Strategy change
+  let stratChangeHtml = '';
+  if (prev?.strategy_direction && prev.strategy_direction !== dir) {
+    stratChangeHtml = `<span class="strat-change">策略变化: ${prev.strategy_direction} → ${dir}</span>`;
+  }
+
+  // Operations
+  const buys = a.operations?.buys || [];
+  const sells = a.operations?.sells || [];
+  let opsHtml = '';
+  if (buys.length === 0 && sells.length === 0) {
+    opsHtml = '<span class="op-chip op-chip-none">无操作</span>';
+  } else {
+    buys.forEach(b => { opsHtml += `<span class="op-chip op-chip-buy">买入 ${b.target} ${b.pct}%</span>`; });
+    sells.forEach(s => { opsHtml += `<span class="op-chip op-chip-sell">卖出 ${s.target} ${s.pct}%</span>`; });
+  }
+
+  // Holdings tags
+  let holdingsHtml = '';
+  const allH = [], prevSet = new Set(), curSet = new Set();
+  if (a.positions) {
+    ['long_term','mid_term','short_term'].forEach(t => {
+      if (a.positions[t]?.holdings?.length) {
+        const lb = t==='long_term'?'长线':t==='mid_term'?'中线':'短线';
+        const p = a.positions[t].pct!=null ? ` ${a.positions[t].pct}%`:'';
+        allH.push({label:lb+p, holdings:a.positions[t].holdings});
+      }
+    });
+    if (a.positions.detail_holdings?.length) allH.push({label:'持仓明细',holdings:a.positions.detail_holdings});
+  }
+  if (prev?.positions) {
+    ['long_term','mid_term','short_term'].forEach(t=>(prev.positions[t]?.holdings||[]).forEach(h=>prevSet.add(h)));
+    (prev.positions.detail_holdings||[]).forEach(h=>prevSet.add(h));
+  }
+  allH.forEach(g=>g.holdings.forEach(h=>curSet.add(h)));
+
+  if (allH.length) {
+    holdingsHtml = '<div class="holdings-section">';
+    allH.forEach(g => {
+      holdingsHtml += `<div class="holdings-group-label">${g.label}</div><div class="holdings-tags">`;
+      g.holdings.forEach(h => {
+        let cls = 'htag';
+        if(prev && !prevSet.has(h)) cls += ' htag-new';
+        holdingsHtml += `<span class="${cls}">${h}</span>`;
+      });
+      holdingsHtml += '</div>';
+    });
+    if(prev){
+      const stripPct = s => s.replace(/\(\d+%\)$/, '');
+      const curNames = new Set([...curSet].map(stripPct));
+      const removed=[...prevSet].filter(h=>!curNames.has(stripPct(h)));
+      if(removed.length){
+        holdingsHtml += '<div class="holdings-group-label">已移除</div><div class="holdings-tags">';
+        removed.forEach(h=>{holdingsHtml+=`<span class="htag htag-removed">${h}</span>`;});
+        holdingsHtml += '</div>';
+      }
+    }
+    holdingsHtml += '</div>';
+  }
+
+  document.getElementById('rightPanel').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-title"><span class="emoji">${assetIcon(key, 'var(--icon-size-lg)')}</span>${cfg.name}</div>
+      <div class="detail-badges">
+        <span class="badge ${pb.cls}">${pb.text}</span>
+        ${posChangeHtml}
+        <span class="strategy-badge ${stratCls}">${dir||'未定义'}</span>
+        ${stratChangeHtml}
+      </div>
+    </div>
+
+    <div class="section-title">仓位趋势</div>
+    <div class="detail-chart" id="detailChartEl"></div>
+
+    <div class="section-title">持仓品种变动矩阵</div>
+    <div class="matrix-wrap" id="matrixEl"></div>
+
+    <div class="info-row">
+      <div class="info-card">
+        <div class="info-card-label">市场观点</div>
+        <div class="info-card-content">${a.market_view||'-'}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">核心逻辑</div>
+        <div class="info-card-content">${a.key_logic||'-'}</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-card">
+        <div class="info-card-label">策略</div>
+        <div class="info-card-content">${a.strategy||'-'}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">今日操作</div>
+        <div class="info-card-content"><div class="ops-row">${opsHtml}</div></div>
+      </div>
+    </div>
+
+    ${holdingsHtml ? `<div class="info-card"><div class="info-card-label">持仓明细</div><div class="info-card-content">${holdingsHtml}</div></div>` : ''}
+
+    <div class="section-title">全局仓位趋势</div>
+    <div class="global-chart" id="globalChartEl"></div>
+
+    <div class="section-title">观点时间线</div>
+    <div id="timelineEl"></div>
+
+    <div class="section-title">操作日志汇总</div>
+    <div class="filter-bar" id="logFilter"></div>
+    <div class="matrix-wrap" style="padding:0;">
+      <table class="log-table">
+        <thead><tr><th>日期</th><th>资产</th><th>方向</th><th>标的</th><th>比例</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  `;
+  refreshIcons();
+
+  // 等DOM布局完成后再渲染图表和矩阵
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      renderDetailChart(key);
+      renderHoldingsMatrix(key);
+      renderGlobalChart();
+      renderTimeline();
+      renderLog();
+    }, 50);
+  });
+}
+
+// Detail Chart (per-asset)
+function renderDetailChart(assetKey) {
+  const el = document.getElementById('detailChartEl');
+  if (!el) return;
+  if (detailChart) detailChart.dispose();
+  detailChart = echarts.init(el, 'dark');
+
+  const dates = Object.keys(DATA.records).sort();
+  const colors = ['#ff6b6b','#ffd93d','#6bcb77','#448aff'];
+  const series = [];
+
+  [{key:'long_term',name:'长线',c:colors[0]},{key:'mid_term',name:'中线',c:colors[1]},{key:'short_term',name:'短线',c:colors[2]}].forEach(st => {
+    const data = dates.map(d => {
+      const v = DATA.records[d]?.[assetKey]?.positions?.[st.key]?.pct;
+      return v !== undefined && v !== null ? v : null;
+    });
+    if (data.some(v => v !== null)) {
+      series.push({ name:st.name, type:'bar', stack:'sub', barWidth:dates.length<=7?30:20, itemStyle:{color:st.c}, data:data.map(v=>v??0), emphasis:{focus:'series'} });
+    }
+  });
+
+  const totalData = dates.map(d => DATA.records[d]?.[assetKey]?.positions?.total ?? null);
+  if (totalData.some(v=>v!=null)) {
+    series.push({ name:'总仓位', type:'line', smooth:true, symbol:'circle', symbolSize:8, lineStyle:{width:3,color:colors[3]}, itemStyle:{color:colors[3]}, data:totalData, connectNulls:true, z:10 });
+  }
+
+  const hps = {};
+  const hc = ['#ff9ff3','#54a0ff','#5f27cd','#01a3a4','#f368e0','#ee5a24','#7ed6df','#badc58'];
+  dates.forEach(d => {
+    (DATA.records[d]?.[assetKey]?.positions?.detail_holdings||[]).forEach(h => {
+      const m = h.match(/^(.+?)\((\d+)%\)$/);
+      if(m){ if(!hps[m[1]])hps[m[1]]={}; hps[m[1]][d]=parseInt(m[2]); }
+    });
+  });
+  let ci=0;
+  Object.entries(hps).forEach(([n,dm])=>{
+    series.push({ name:n, type:'line', smooth:true, symbol:'diamond', symbolSize:6, lineStyle:{width:2,type:'dashed',color:hc[ci%hc.length]}, itemStyle:{color:hc[ci%hc.length]}, data:dates.map(d=>dm[d]??null), connectNulls:true });
+    ci++;
+  });
+
+  if (!series.length) { el.innerHTML='<div class="no-data" style="height:100%;justify-content:center;padding:0;"><i data-lucide="bar-chart-3"></i>暂无数值型仓位数据</div>'; refreshIcons(); return; }
+
+  detailChart.setOption({
+    backgroundColor:'transparent',
+    tooltip:{ trigger:'axis', backgroundColor:'#1e2235', borderColor:'#3a4162', textStyle:{color:'#e8eaed',fontSize:11},
+      formatter(ps){ let h=`<b>${ps[0].axisValue}</b><br>`; ps.forEach(p=>{if(p.value!=null&&p.value!==0)h+=`${p.marker} ${p.seriesName}: <b>${p.value}%</b><br>`;}); return h; }
+    },
+    legend:{ bottom:0, textStyle:{color:'#9aa0b4',fontSize:10}, itemWidth:12, itemHeight:8 },
+    grid:{ left:40,right:16,top:28,bottom:40 },
+    xAxis:{ type:'category', data:dates.map(d=>d.slice(5)), axisLine:{lineStyle:{color:'#3a4162'}}, axisLabel:{color:'#6b7280',fontSize:10} },
+    yAxis:{ type:'value', axisLine:{show:false}, splitLine:{lineStyle:{color:'#3a4162'}}, axisLabel:{color:'#6b7280',fontSize:10,formatter:'{value}%'} },
+    series
+  });
+  new ResizeObserver(()=>detailChart.resize()).observe(el);
+}
+
+// Holdings Matrix
+function renderHoldingsMatrix(assetKey) {
+  const el = document.getElementById('matrixEl');
+  if (!el) return;
+  const dates = Object.keys(DATA.records).sort();
+  const catKeys=['long_term','mid_term','short_term'];
+  const catLabels={long_term:'长线',mid_term:'中线',short_term:'短线'};
+  const catColors={long_term:'#ff6b6b',mid_term:'#ffd93d',short_term:'#6bcb77'};
+
+  function getDateInfo(d) {
+    const pos=DATA.records[d]?.[assetKey]?.positions;
+    const ops=DATA.records[d]?.[assetKey]?.operations||{buys:[],sells:[]};
+    if(!pos) return {categories:{},detailHoldings:{},ops};
+    const categories={};
+    catKeys.forEach(t=>{
+      if(pos[t]?.holdings?.length||pos[t]?.pct!=null) categories[t]={pct:pos[t]?.pct,holdings:new Set(pos[t]?.holdings||[])};
+    });
+    const detailHoldings={};
+    (pos.detail_holdings||[]).forEach(h=>{
+      const m=h.match(/^(.+?)\((\d+)%\)$/);
+      if(m) detailHoldings[m[1]]=parseInt(m[2]); else detailHoldings[h]=null;
+    });
+    return {categories,detailHoldings,ops};
+  }
+
+  const dateInfos={}; dates.forEach(d=>{dateInfos[d]=getDateInfo(d);});
+  function getOpsMap(d){ const m={}; (dateInfos[d].ops.buys||[]).forEach(b=>{m[b.target]={dir:'buy',pct:b.pct};}); (dateInfos[d].ops.sells||[]).forEach(s=>{m[s.target]={dir:'sell',pct:s.pct};}); return m; }
+
+  const activeCats=new Set(), catHoldings={};
+  catKeys.forEach(t=>{catHoldings[t]=new Set();});
+  dates.forEach(d=>catKeys.forEach(t=>{if(dateInfos[d].categories[t]){activeCats.add(t);dateInfos[d].categories[t].holdings.forEach(h=>catHoldings[t].add(h));}}));
+  const allDH=new Set();
+  dates.forEach(d=>Object.keys(dateInfos[d].detailHoldings).forEach(h=>allDH.add(h)));
+
+  let total=0; activeCats.forEach(t=>{total+=catHoldings[t].size;}); total+=allDH.size;
+  if(!total){el.innerHTML='<div class="no-data"><i data-lucide="inbox"></i>暂无持仓品种数据</div>';refreshIcons();return;}
+
+  let html='<table class="matrix-table"><thead><tr><th style="text-align:left">品种</th><th style="text-align:left">类型</th>';
+  dates.forEach(d=>{html+=`<th>${d.slice(5)}</th>`;});
+  html+='</tr></thead><tbody>';
+
+  catKeys.forEach(t=>{
+    if(!activeCats.has(t))return;
+    const lb=catLabels[t];
+    const cc=catColors[t];
+    html+=`<tr style="background:${cc}0d"><td style="font-weight:700;color:${cc}">${lb}合计</td><td style="color:var(--text-muted)">--</td>`;
+    dates.forEach((d,i)=>{
+      const cat=dateInfos[d].categories[t], prev=i>0?dateInfos[dates[i-1]].categories[t]:null;
+      if(!cat||cat.pct==null){html+='<td style="color:var(--text-muted)">--</td>';return;}
+      let ch='';
+      if(prev?.pct!=null){const diff=cat.pct-prev.pct;if(diff>0)ch=`<span style="color:var(--accent-green);font-size:10px;margin-left:4px">↑+${diff}</span>`;else if(diff<0)ch=`<span style="color:var(--accent-red);font-size:10px;margin-left:4px">↓${diff}</span>`;else ch=`<span style="color:var(--text-muted);font-size:10px;margin-left:4px">→</span>`;}
+      html+=`<td style="font-weight:700">${cat.pct}%${ch}</td>`;
+    });
+    html+='</tr>';
+
+    [...catHoldings[t]].sort().forEach(h=>{
+      html+=`<tr><td style="padding-left:20px">${h}</td><td><span style="font-size:10px;padding:1px 6px;border-radius:3px;background:${cc}1a;color:${cc}">${lb}</span></td>`;
+      dates.forEach((d,i)=>{
+        const cat=dateInfos[d].categories[t], held=cat?.holdings?.has(h);
+        const prevCat=i>0?dateInfos[dates[i-1]].categories[t]:null, prevHeld=prevCat?.holdings?.has(h);
+        const opsMap=getOpsMap(d), op=opsMap[h];
+        const genericSell=opsMap['清空短线仓']||opsMap['清空中线仓']||opsMap['清空长线仓'];
+        if(!held&&prevHeld){
+          let si=''; if(genericSell&&t==='short_term')si='清仓'; else if(op?.dir==='sell')si=`卖-${op.pct}%`; else si='移除';
+          html+=`<td><div style="display:flex;flex-direction:column;align-items:center"><span class="dot-removed"></span><span style="font-size:9px;color:var(--accent-red)">${si}</span></div></td>`;
+        } else if(!held){
+          html+=`<td><span class="dot-empty"></span></td>`;
+        } else {
+          const isNew=held&&!prevHeld&&i>0;
+          let opL='';
+          if(op?.dir==='buy') opL=`<span style="font-size:9px;color:var(--accent-green)">买+${op.pct}%</span>`;
+          else if(op?.dir==='sell') opL=`<span style="font-size:9px;color:var(--accent-red)">卖-${op.pct}%</span>`;
+          else if(isNew) opL=`<span style="font-size:9px;color:var(--accent-green)">新增</span>`;
+          html+=`<td><div style="display:flex;flex-direction:column;align-items:center;gap:1px"><span class="${isNew?'dot-new':'dot-held'}" style="width:8px;height:8px"></span>${opL}</div></td>`;
+        }
+      });
+      html+='</tr>';
+    });
+  });
+
+  if(allDH.size){
+    html+=`<tr style="background:rgba(68,138,255,0.05)"><td style="font-weight:700;color:var(--accent-blue)">独立比例品种</td><td style="color:var(--text-muted)">--</td>`;
+    dates.forEach(()=>{html+='<td></td>';}); html+='</tr>';
+    [...allDH].sort().forEach(h=>{
+      html+=`<tr><td style="padding-left:20px">${h}</td><td><span style="font-size:10px;padding:1px 6px;border-radius:3px;background:rgba(179,136,255,0.1);color:var(--accent-purple)">明细</span></td>`;
+      dates.forEach((d,i)=>{
+        const pct=dateInfos[d].detailHoldings[h], prevPct=i>0?dateInfos[dates[i-1]].detailHoldings[h]:undefined;
+        const held=pct!==undefined, prevHeld=prevPct!==undefined;
+        const op=getOpsMap(d)[h];
+        if(!held&&prevHeld){
+          const si=op?.dir==='sell'?`卖-${op.pct}%`:'移除';
+          html+=`<td><div style="display:flex;flex-direction:column;align-items:center"><span class="dot-removed"></span><span style="font-size:9px;color:var(--accent-red)">${si}</span></div></td>`;
+        } else if(!held){ html+=`<td><span class="dot-empty"></span></td>`;
+        } else {
+          const isNew=held&&!prevHeld&&i>0;
+          let ch='';
+          if(pct!=null&&prevPct!=null){const diff=pct-prevPct;if(diff>0)ch=`<span style="color:var(--accent-green);font-size:9px">↑+${diff}</span>`;else if(diff<0)ch=`<span style="color:var(--accent-red);font-size:9px">↓${diff}</span>`;}
+          let opL='';if(op?.dir==='buy')opL=`<span style="font-size:9px;color:var(--accent-green)">买+${op.pct}%</span>`;else if(op?.dir==='sell')opL=`<span style="font-size:9px;color:var(--accent-red)">卖-${op.pct}%</span>`;
+          html+=`<td><div style="display:flex;flex-direction:column;align-items:center;gap:1px"><span class="${isNew?'dot-new':'dot-held'}" style="width:8px;height:8px"></span><span style="font-size:10px;font-weight:600;color:${isNew?'var(--accent-green)':'var(--text-primary)'}">${pct!=null?pct+'%':''}</span>${ch}${opL}</div></td>`;
+        }
+      });
+      html+='</tr>';
+    });
+  }
+
+  html+='</tbody></table>';
+  html+=`<div class="matrix-legend"><span><span class="dot-held"></span> 持有</span><span><span class="dot-new"></span> 新增</span><span><span class="dot-removed"></span> 移除</span><span><span class="dot-empty"></span> 未持有</span><span style="color:var(--accent-green)">买+N%</span><span style="color:var(--accent-red)">卖-N%</span></div>`;
+  el.innerHTML = html;
+}
+
+// Global Chart
+function renderGlobalChart() {
+  const el = document.getElementById('globalChartEl');
+  if (!el) return;
+  if (globalChart) globalChart.dispose();
+  globalChart = echarts.init(el, 'dark');
+  const dates = Object.keys(DATA.records).sort();
+  const assets = ASSET_KEYS.filter(k=>dates.some(d=>DATA.records[d]?.[k]?.positions?.total!=null));
+  const series = assets.map(k=>({
+    name:ASSET_CONFIG[k].name, type:'line', smooth:true, symbol:'circle', symbolSize:5,
+    data:dates.map(d=>DATA.records[d]?.[k]?.positions?.total??null), connectNulls:true
+  }));
+  globalChart.setOption({
+    backgroundColor:'transparent',
+    tooltip:{ trigger:'axis',backgroundColor:'#1e2235',borderColor:'#3a4162',textStyle:{color:'#e8eaed',fontSize:11},
+      formatter(ps){let h=`<b>${ps[0].axisValue}</b><br>`;ps.forEach(p=>{if(p.value!=null)h+=`${p.marker} ${p.seriesName}: <b>${p.value}%</b><br>`;});return h;}
+    },
+    legend:{type:'scroll',bottom:0,textStyle:{color:'#9aa0b4',fontSize:11},pageTextStyle:{color:'#9aa0b4'}},
+    grid:{left:50,right:30,top:20,bottom:50},
+    xAxis:{type:'category',data:dates,axisLine:{lineStyle:{color:'#3a4162'}},axisLabel:{color:'#6b7280',fontSize:11}},
+    yAxis:{type:'value',axisLine:{show:false},splitLine:{lineStyle:{color:'#3a4162'}},axisLabel:{color:'#6b7280',formatter:'{value}%'}},
+    series
+  });
+  new ResizeObserver(()=>globalChart.resize()).observe(el);
+}
+
+// Timeline
+function renderTimeline() {
+  const el = document.getElementById('timelineEl');
+  if (!el) return;
+  const dates = Object.keys(DATA.records).sort();
+  let html = '';
+  ASSET_KEYS.forEach(k=>{
+    const cfg=ASSET_CONFIG[k]; let items='';
+    dates.slice().reverse().forEach(d=>{
+      const a=DATA.records[d]?.[k]; if(!a)return;
+      const oi=dates.indexOf(d);
+      const prevA=oi>0?DATA.records[dates[oi-1]]?.[k]:null;
+      const changed=prevA&&prevA.strategy_direction!==a.strategy_direction;
+      const cn=changed?`<div class="strat-change" style="margin-top:3px">策略变化: ${prevA.strategy_direction} → ${a.strategy_direction}</div>`:'';
+      items+=`<div class="timeline-item${changed?' changed':''}"><div class="timeline-date">${d}</div><div class="timeline-text">${a.market_view||'-'}</div><div class="timeline-strategy"><span class="strategy-badge ${getStratCls(a.strategy_direction)}">${a.strategy_direction||'未定义'}</span>${cn}</div></div>`;
+    });
+    if(items) html+=`<div class="timeline-group"><div class="timeline-group-header">${assetIcon(k)} ${cfg.name}</div><div class="timeline">${items}</div></div>`;
+  });
+  el.innerHTML = html || '<div class="no-data"><i data-lucide="inbox"></i>暂无数据</div>';
+  refreshIcons();
+}
+
+// Log
+let logFilter = 'all';
+function renderLog() {
+  const fb=document.getElementById('logFilter');
+  if(!fb)return;
+  let fh=`<button class="filter-btn ${logFilter==='all'?'active':''}" onclick="setLogFilter('all')">全部</button>`;
+  ASSET_KEYS.forEach(k=>{fh+=`<button class="filter-btn ${logFilter===k?'active':''}" onclick="setLogFilter('${k}')">${ASSET_CONFIG[k].name}</button>`;});
+  fb.innerHTML=fh;
+  const dates=Object.keys(DATA.records).sort().reverse();
+  const rows=[];
+  dates.forEach(d=>ASSET_KEYS.forEach(k=>{
+    const a=DATA.records[d]?.[k]; if(!a)return;
+    if(logFilter!=='all'&&logFilter!==k)return;
+    (a.operations?.buys||[]).forEach(b=>rows.push({date:d,asset:ASSET_CONFIG[k].name,dir:'买入',target:b.target,pct:b.pct}));
+    (a.operations?.sells||[]).forEach(s=>rows.push({date:d,asset:ASSET_CONFIG[k].name,dir:'卖出',target:s.target,pct:s.pct}));
+  }));
+  const tb=document.getElementById('logBody');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="5" class="no-data" style="padding:30px">暂无操作记录</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>`<tr><td>${r.date}</td><td>${r.asset}</td><td><span class="${r.dir==='买入'?'op-buy-tag':'op-sell-tag'}">${r.dir}</span></td><td>${r.target}</td><td><b>${r.pct}%</b></td></tr>`).join('');
+}
+function setLogFilter(f){logFilter=f;renderLog();}
+
+// Asset Pool
+function switchPoolCurrency(c) { poolCurrency = c; renderAssetPool(); }
+function setPoolSearch(v) { poolSearch = v.toLowerCase(); renderPoolTable(); }
+function setPoolRisk(r) { poolRiskFilter = r; renderAssetPool(); }
+function togglePoolGroup(g) { collapsedGroups.has(g) ? collapsedGroups.delete(g) : collapsedGroups.add(g); renderPoolTable(); }
+function toggleShowRemoved() { showRemoved = !showRemoved; renderAssetPool(); }
+
+function renderAssetPool() {
+  if (!DATA.assetPool) { document.getElementById('rightPanel').innerHTML = '<div class="no-data"><i data-lucide="inbox"></i>暂无资产池数据</div>'; refreshIcons(); return; }
+  const lastUpdate = DATA.assetPool.lastUpdate || '-';
+  document.getElementById('rightPanel').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-title"><span class="emoji"><i data-lucide="briefcase" style="width:var(--icon-size-lg);height:var(--icon-size-lg);color:var(--accent-blue)"></i></span>大类资产跟踪池</div>
+      <div class="pool-header-meta">
+        <span class="pool-last-update">最近更新: ${lastUpdate}</span>
+        <label class="pool-toggle"><input type="checkbox" ${showRemoved?'checked':''} onchange="toggleShowRemoved()"> 显示已移除品种</label>
+      </div>
+    </div>
+    <div class="pool-tabs">
+      <button class="pool-tab ${poolCurrency==='rmb'?'active':''}" onclick="switchPoolCurrency('rmb')">🇨🇳 人民币资产</button>
+      <button class="pool-tab ${poolCurrency==='usd'?'active':''}" onclick="switchPoolCurrency('usd')">🇺🇸 美元资产</button>
+    </div>
+    <div class="pool-search-row">
+      <input class="pool-search" placeholder="搜索代码 / 名称 / 赛道..." value="${poolSearch}" oninput="setPoolSearch(this.value)">
+      <div class="pool-risk-filters">
+        <button class="pool-risk-btn ${poolRiskFilter==='all'?'active':''}" onclick="setPoolRisk('all')">全部</button>
+        <button class="pool-risk-btn ${poolRiskFilter==='R5'?'active':''}" onclick="setPoolRisk('R5')">R5</button>
+        <button class="pool-risk-btn ${poolRiskFilter==='R4'?'active':''}" onclick="setPoolRisk('R4')">R4</button>
+        <button class="pool-risk-btn ${poolRiskFilter==='R3'?'active':''}" onclick="setPoolRisk('R3')">R3</button>
+        <button class="pool-risk-btn ${poolRiskFilter==='R2'?'active':''}" onclick="setPoolRisk('R2')">R2</button>
+        <button class="pool-risk-btn ${poolRiskFilter==='R1'?'active':''}" onclick="setPoolRisk('R1')">R1</button>
+      </div>
+    </div>
+    <div id="poolTableArea"></div>
+    <div id="poolStats"></div>
+  `;
+  renderPoolTable();
+  refreshIcons();
+}
+
+function renderPoolTable() {
+  const area = document.getElementById('poolTableArea');
+  const statsEl = document.getElementById('poolStats');
+  if (!area) return;
+  const pool = DATA.assetPool[poolCurrency];
+  const lastUpdate = DATA.assetPool.lastUpdate || '';
+  if (!pool) { area.innerHTML = '<div class="no-data"><i data-lucide="inbox"></i>暂无数据</div>'; refreshIcons(); return; }
+
+  let totalCount = 0, activeCount = 0, newCount = 0, removedCount = 0, riskMap = {};
+  let html = '';
+
+  Object.entries(pool).forEach(([group, items]) => {
+    const filtered = items.filter(it => {
+      const isRemoved = !!it.removedDate;
+      const isRemovedNow = it.removedDate === lastUpdate;
+      const isRemovedOld = isRemoved && !isRemovedNow;
+      // Hide removed items unless showRemoved is on (always show just-removed items)
+      if (isRemovedOld && !showRemoved) return false;
+      const matchSearch = !poolSearch || it.code.toLowerCase().includes(poolSearch) || it.name.toLowerCase().includes(poolSearch) || (it.sector||'').toLowerCase().includes(poolSearch);
+      const matchRisk = poolRiskFilter === 'all' || it.risk === poolRiskFilter;
+      return matchSearch && matchRisk;
+    });
+    if (!filtered.length) return;
+
+    let groupNew = 0, groupRemoved = 0;
+    filtered.forEach(it => {
+      totalCount++;
+      const isNew = it.addedDate === lastUpdate && !it.removedDate;
+      const isRemoved = !!it.removedDate;
+      if (!isRemoved) { activeCount++; if (it.risk) riskMap[it.risk] = (riskMap[it.risk]||0) + 1; }
+      if (isNew) { newCount++; groupNew++; }
+      if (it.removedDate === lastUpdate) { removedCount++; groupRemoved++; }
+    });
+
+    const isCollapsed = collapsedGroups.has(poolCurrency+'_'+group);
+    const activeInGroup = filtered.filter(i=>!i.removedDate).length;
+    let changeBadges = '';
+    if (groupNew) changeBadges += `<span class="pool-new-badge">+${groupNew} 新增</span>`;
+    if (groupRemoved) changeBadges += `<span class="pool-removed-badge">-${groupRemoved} 移除</span>`;
+
+    html += `<div class="pool-group">
+      <div class="pool-group-header" onclick="togglePoolGroup('${poolCurrency}_${group}')">
+        <div class="pool-group-title">${group} ${changeBadges} <span class="pool-group-count">${activeInGroup}只</span></div>
+        <span class="pool-group-arrow ${isCollapsed?'collapsed':''}">▼</span>
+      </div>`;
+
+    if (!isCollapsed) {
+      html += `<div class="pool-group-body"><table class="pool-table">
+        <thead><tr><th>代码</th><th>名称</th><th>细分赛道</th><th>费率</th><th>业绩</th><th>风险</th></tr></thead><tbody>`;
+      filtered.forEach(it => {
+        const isNew = it.addedDate === lastUpdate && !it.removedDate;
+        const isRemovedNow = it.removedDate === lastUpdate;
+        const isRemovedOld = it.removedDate && it.removedDate !== lastUpdate;
+        let rowCls = '';
+        let tag = '';
+        if (isNew) { rowCls = ' class="pool-new"'; tag = '<span class="pool-new-badge">新增</span>'; }
+        else if (isRemovedNow) { rowCls = ' class="pool-removed"'; tag = '<span class="pool-removed-badge">已移除</span>'; }
+        else if (isRemovedOld) { rowCls = ' class="pool-removed-old"'; tag = '<span class="pool-removed-badge">历史移除</span>'; }
+        const riskCls = it.risk ? `risk-${it.risk}` : '';
+        html += `<tr${rowCls}>
+          <td style="font-weight:600;white-space:nowrap">${it.code}${tag}</td>
+          <td>${it.name}</td>
+          <td style="font-size:11px;color:var(--text-muted);max-width:220px">${it.sector||'-'}</td>
+          <td style="font-size:11px">${it.fee||'-'}</td>
+          <td style="font-size:11px">${it.perf||'-'}</td>
+          <td><span class="risk-badge ${riskCls}">${it.risk||'-'}</span></td>
+        </tr>`;
+      });
+      html += '</tbody></table></div>';
+    }
+    html += '</div>';
+  });
+
+  if (!html) html = '<div class="no-data"><i data-lucide="search-x"></i>无匹配结果</div>';
+  area.innerHTML = html;
+
+  // Stats
+  const riskStr = Object.entries(riskMap).sort((a,b)=>b[0].localeCompare(a[0])).map(([r,c])=>`<span class="pool-stat"><span class="risk-badge risk-${r}">${r}</span> <b>${c}</b></span>`).join('');
+  statsEl.innerHTML = `<div class="pool-stats">
+    <span class="pool-stat">共 <b>${totalCount}</b> 只</span>
+    <span class="pool-stat">活跃 <b>${activeCount}</b> 只</span>
+    <span class="pool-stat" style="color:var(--accent-green)">本次新增 <b>${newCount}</b> 只</span>
+    <span class="pool-stat" style="color:var(--accent-red)">本次移除 <b>${removedCount}</b> 只</span>
+    ${riskStr}
+  </div>`;
+}
+
+loadData();
+</script>
+</body>
+</html>
