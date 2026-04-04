@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-03-31",
+  "lastUpdate": "2026-04-01",
   "assetLabels": {
     "a_shares": "A股",
     "hk_stocks": "港股",
@@ -7257,6 +7257,352 @@
           "long_term": {
             "pct": null,
             "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      }
+    },
+    "2026-04-01": {
+      "a_shares": {
+        "market_view": "大盘再次跟随外资反弹，量能持平，下午有资金进场。消息面上在传要和谈，但这事仍有反复，最好确定后再大规模返场",
+        "key_logic": "目前仍是结构性机会，指数已修复牛熊线。如果周五不破3941点，大概率进入安全区间。但仍要等到战争最终停止才有趋势性行情",
+        "strategy": "行情已脱离基本面判断，战争因素太大，仓位控制在5成等待战争明朗化。今天卖出华为算力3%（后面以做T为主），买入被动器件2%。长线仓61%，中线0，短线0，总仓位62%。不能单赌一只或单一赛道，做好仓位管理才能驶得万年船",
+        "strategy_direction": "防守",
+        "operations": {
+          "buys": [
+            {
+              "target": "被动器件",
+              "pct": 2
+            }
+          ],
+          "sells": [
+            {
+              "target": "华为算力",
+              "pct": 3
+            }
+          ]
+        },
+        "positions": {
+          "long_term": {
+            "pct": 61,
+            "holdings": [
+              "被动器件",
+              "铜箔",
+              "机器人",
+              "AI电源",
+              "OCS",
+              "二线光模块",
+              "储能"
+            ]
+          },
+          "mid_term": {
+            "pct": 0,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": 0,
+            "holdings": []
+          },
+          "total": 62
+        }
+      },
+      "hk_stocks": {
+        "market_view": "港股出现反弹，但目前已进入熊市。医药股形成大涨日线弱底分",
+        "key_logic": "日线确认为日线级别反弹，周线尚未走好，中线还不能确认趋势形成，以日线反弹看待",
+        "strategy": "全面进入防守状态，外资最近交易AI恐慌，网科板块抛压较大，月财报公布未能止跌。今天卖出10%创新药。目前持有创新药、液冷，总仓位20%",
+        "strategy_direction": "防守",
+        "operations": {
+          "buys": [],
+          "sells": [
+            {
+              "target": "创新药",
+              "pct": 10
+            }
+          ]
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": [
+              "创新药",
+              "液冷"
+            ]
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": 20
+        }
+      },
+      "us_stocks": {
+        "market_view": "高油价下对科技股仍有拖累，美股估值又回到高位（高于五年均值30%），道指偏离度更高",
+        "key_logic": "受局势恶化影响大幅下跌，调整压力仍在",
+        "strategy": "以投资低估有前景的个股为主，预防进一步恶化的战争风险。昨晚买入ASIC 4%。目前持有比特币持有商、芯片授权平台、硅光芯片、ASIC，总仓位38%",
+        "strategy_direction": "谨慎",
+        "operations": {
+          "buys": [
+            {
+              "target": "ASIC",
+              "pct": 4
+            }
+          ],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": [
+              "比特币持有商",
+              "芯片授权平台",
+              "硅光芯片",
+              "ASIC"
+            ]
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": 38
+        }
+      },
+      "india_stocks": {
+        "market_view": "再次跟随美股反弹，目前进入低估区域",
+        "key_logic": "印度GDP仍在增长，长线看多印度市场。但涨幅较慢，暂不参与",
+        "strategy": "可适当定投",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": 0
+        }
+      },
+      "reits": {
+        "market_view": "最近走势有所分化，有资金继续定投",
+        "key_logic": "海外REIT受11月美写字楼空置率有所抬高影响，可能进一步影响REITs收益率",
+        "strategy": "可按每跌2%定投一次，考虑分批定投",
+        "strategy_direction": "定投",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "oil": {
+        "market_view": "局势仍会反复，石油再次回到100美元以下，而中东现货已涨到155美元",
+        "key_logic": "轰炸还在继续，石油基础设施被炸，修复仍需时间。石油将在高位震荡1-2个月",
+        "strategy": "未来在80-100美元之间震荡。石油恢复供应后将再次长期下跌到65美元左右。短期观望为主，等待局势明朗后再行决定",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "copper": {
+        "market_view": "局势反复，铜价出现反弹，后面还要看战争进展",
+        "key_logic": "基本面仍向好，长线看好。受铜矿停产影响供应进一步紧张，产能依然紧张，铜精矿仍然紧张，缺口仍然维持到年底。贸易战如果缓解，铜可能再涨回原来高位。铜受上游矿产资源不足影响，易涨难跌，但铜库存仍在中高位",
+        "strategy": "COMEX铜跌到4元以下定投，每跌2%投一次。目前以震荡为主，观望为宜",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "gold": {
+        "market_view": "局势反复，金价出现反弹，美降息预期落空，油价仍是短期扰动",
+        "key_logic": "美元再度走强将导致黄金走弱，但仍会向上，长期仍看多。目前各国增持黄金的动作开始减弱，是否会继续增持还需再观察几个月",
+        "strategy": "如果各央行增持动力不强，将以横盘震荡为主，震荡区间4000-4500美元",
+        "strategy_direction": "谨慎",
+        "price_range": "4000-4500美元",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "cn_bonds": {
+        "market_view": "30年国债由于利率较低，资金仍选择布局红利股为主",
+        "key_logic": null,
+        "strategy": "目前运营商和港股红利进入定投区间，可考虑分批定投。今日无操作",
+        "strategy_direction": "定投",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": [
+              "运营商",
+              "煤炭"
+            ]
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null,
+          "detail_holdings": "运营商50%，煤炭50%"
+        }
+      },
+      "us_bonds": {
+        "market_view": "10年期美债收益率开始回落，市场从交易降息到交易加息，风向出现转变",
+        "key_logic": "暂时看空美债，等待战争进一步明确。短债仍继续看多，仍有3.5%左右回报",
+        "strategy": "目前空仓，短债仍继续看多",
+        "strategy_direction": "看空",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": 0
+        }
+      },
+      "forex": {
+        "market_view": "美元小幅升值到99附近，由于美信用进一步受损，长期看仍走贬值趋势。人民币升值到6.87，6.8应该是央行底线，今年总体维持6.8-7.1之间震荡。日元受首相连任影响出现贬值走势，日央行干预市场形成震荡",
+        "key_logic": "短期震荡修复为主，美元未来在95-100之间波动",
+        "strategy": "欧元维持震荡为主",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "bitcoin": {
+        "market_view": "反弹到6.9万，流动性并没有出现问题，2季度市场将得到修复",
+        "key_logic": "今年看多到15万美元，可适当做多。目前比特币挖矿成本在6-7万左右，低于7万都是无风险收益",
+        "strategy": "可选择在8万以下开始定投，也可以选择安全边际更高的7万开始定投。由于美股比特币持有商底背离较长时间，继续持有等待反转",
+        "strategy_direction": "看多",
+        "price_target": "15万美元",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": [
+              "比特币持有商"
+            ]
           },
           "mid_term": {
             "pct": null,
