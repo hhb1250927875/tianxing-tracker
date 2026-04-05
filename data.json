@@ -7618,8 +7618,8 @@
     },
     "2026-04-02": {
       "a_shares": {
-        "market_view": "大盘仍需谨慎，不能抱有侥幸心理",
-        "key_logic": null,
+        "market_view": "大盘仍需谨慎，不能抱有侥幸心理，市场处于调整阶段",
+        "key_logic": "短期市场波动加剧，需保持防守姿态",
         "strategy": "防守，买入被动器件1%、创新药2%、铜箔3%",
         "strategy_direction": "防守",
         "operations": {
@@ -7714,9 +7714,9 @@
         }
       },
       "gold": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "看多，震荡区间在4000-4500美元之间",
+        "market_view": "局势反复，金价横盘震荡，长期仍看多",
+        "key_logic": "长期看多黄金",
+        "strategy": "震荡区间在4000-4500美元之间",
         "strategy_direction": "看多",
         "price_range": "4000-4500美元",
         "operations": {
