@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-04-03",
+  "lastUpdate": "2026-04-02",
   "assetLabels": {
     "a_shares": "A股",
     "hk_stocks": "港股",
@@ -7618,9 +7618,9 @@
     },
     "2026-04-02": {
       "a_shares": {
-        "market_view": "大盘仍需谨慎，不能抱有侥幸心理，市场处于调整阶段",
-        "key_logic": "短期市场波动加剧，需保持防守姿态",
-        "strategy": "防守，买入被动器件1%、创新药2%、铜箔3%",
+        "market_view": "大盘一天涨一天跌，今天再次缩量下跌，战争的局势仍不明朗，油价再冲上100美元，由于本周收周线，可借鉴全A指数较准...现在的行情已脱离对基本面的判断了，战争左右的因素太大",
+        "key_logic": "创新药日线级别反弹，周线仍需观察...储能受国内招标价格低于预期影响下跌，电芯、隔膜和铜箔较强",
+        "strategy": "仓位上最好进行一定的控制直至不可控因素消失...目前控制在5成仓位等待战争明朗化...特别强调要做大小票组合",
         "strategy_direction": "防守",
         "operations": {
           "buys": [
@@ -7643,7 +7643,7 @@
           "long_term": {
             "pct": 67,
             "holdings": [
-              "华为算力",
+              "被动器件",
               "铜箔",
               "机器人",
               "AI电源",
@@ -7653,20 +7653,22 @@
             ]
           },
           "mid_term": {
-            "pct": null,
-            "holdings": []
+            "pct": 2,
+            "holdings": [
+              "创新药"
+            ]
           },
           "short_term": {
-            "pct": null,
+            "pct": 0,
             "holdings": []
           },
           "total": 67
         }
       },
       "hk_stocks": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "防守",
+        "market_view": "港股再次大跌，目前已进入熊市...由于外资最近交易AI恐慌，所以对网科板块是较大抛压",
+        "key_logic": "医药股形成大涨日线弱底分，日线确认为日线反弹...月财报公布未能止跌",
+        "strategy": "目前策略是全面进入防守状态",
         "strategy_direction": "防守",
         "operations": {
           "buys": [],
@@ -7685,13 +7687,17 @@
             "pct": null,
             "holdings": []
           },
-          "total": 20
+          "total": 20,
+          "detail_holdings": [
+            "创新药",
+            "液冷"
+          ]
         }
       },
       "us_stocks": {
-        "market_view": null,
+        "market_view": "美股昨晚大跌，也是受到战争影响，目前美股处于高位，随时有大幅回调风险",
         "key_logic": null,
-        "strategy": "谨慎",
+        "strategy": "目前策略是保持谨慎",
         "strategy_direction": "谨慎",
         "operations": {
           "buys": [],
@@ -7710,13 +7716,17 @@
             "pct": null,
             "holdings": []
           },
-          "total": 34
+          "total": 34,
+          "detail_holdings": [
+            "硅光芯片",
+            "ASIC"
+          ]
         }
       },
       "gold": {
-        "market_view": "局势反复，金价横盘震荡，长期仍看多",
-        "key_logic": "长期看多黄金",
-        "strategy": "震荡区间在4000-4500美元之间",
+        "market_view": "黄金今天大涨，创出新高，目前战争局势不明朗，黄金作为避险资产仍有上涨空间",
+        "key_logic": null,
+        "strategy": "目前策略是看多，震荡区间在4000-4500美元之间",
         "strategy_direction": "看多",
         "price_range": "4000-4500美元",
         "operations": {
@@ -7724,6 +7734,7 @@
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7735,20 +7746,19 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       },
       "bitcoin": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "观望",
+        "market_view": "比特币今天大跌，目前已跌破6万大关",
+        "strategy": "目前策略是观望",
         "strategy_direction": "观望",
         "operations": {
           "buys": [],
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7760,20 +7770,19 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       },
       "oil": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "观望",
+        "market_view": "原油今天大涨，冲上100美元，受战争影响较大",
+        "strategy": "目前策略是观望",
         "strategy_direction": "观望",
         "operations": {
           "buys": [],
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7785,20 +7794,19 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       },
       "copper": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "看多",
+        "market_view": "铜今天大涨，创出新高",
+        "strategy": "目前策略是看多",
         "strategy_direction": "看多",
         "operations": {
           "buys": [],
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7810,20 +7818,19 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       },
       "reits": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "定投",
+        "market_view": "目前REITs处于低位",
+        "strategy": "目前策略是定投",
         "strategy_direction": "定投",
         "operations": {
           "buys": [],
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7835,20 +7842,19 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       },
       "cn_bonds": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "防守",
+        "market_view": "目前国内理财/债券收益率走低",
+        "strategy": "目前策略是防守",
         "strategy_direction": "防守",
         "operations": {
           "buys": [],
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7860,20 +7866,19 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       },
       "us_bonds": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "防守",
+        "market_view": "美债收益率走高",
+        "strategy": "目前策略是防守",
         "strategy_direction": "防守",
         "operations": {
           "buys": [],
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7885,20 +7890,19 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       },
       "forex": {
-        "market_view": null,
-        "key_logic": null,
-        "strategy": "观望",
+        "market_view": "美元指数走强，人民币贬值",
+        "strategy": "目前策略是观望",
         "strategy_direction": "观望",
         "operations": {
           "buys": [],
           "sells": []
         },
         "positions": {
+          "total": null,
           "long_term": {
             "pct": null,
             "holdings": []
@@ -7910,8 +7914,7 @@
           "short_term": {
             "pct": null,
             "holdings": []
-          },
-          "total": null
+          }
         }
       }
     },
