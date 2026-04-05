@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-04-01",
+  "lastUpdate": "2026-04-02",
   "assetLabels": {
     "a_shares": "A股",
     "hk_stocks": "港股",
@@ -7603,6 +7603,305 @@
             "holdings": [
               "比特币持有商"
             ]
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      }
+    },
+    "2026-04-02": {
+      "a_shares": {
+        "market_view": "大盘仍需谨慎，不能抱有侥幸心理",
+        "key_logic": null,
+        "strategy": "防守，买入被动器件1%、创新药2%、铜箔3%",
+        "strategy_direction": "防守",
+        "operations": {
+          "buys": [
+            {
+              "target": "被动器件",
+              "pct": 1
+            },
+            {
+              "target": "创新药",
+              "pct": 2
+            },
+            {
+              "target": "铜箔",
+              "pct": 3
+            }
+          ],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": 67,
+            "holdings": [
+              "华为算力",
+              "铜箔",
+              "机器人",
+              "AI电源",
+              "OCS",
+              "二线光模块",
+              "储能"
+            ]
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": 67
+        }
+      },
+      "hk_stocks": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "防守",
+        "strategy_direction": "防守",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": 20
+        }
+      },
+      "us_stocks": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "谨慎",
+        "strategy_direction": "谨慎",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": 34
+        }
+      },
+      "gold": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "看多，震荡区间在4000-4500美元之间",
+        "strategy_direction": "看多",
+        "price_range": "4000-4500美元",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "bitcoin": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "观望",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "oil": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "观望",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "copper": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "看多",
+        "strategy_direction": "看多",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "reits": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "定投",
+        "strategy_direction": "定投",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "cn_bonds": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "防守",
+        "strategy_direction": "防守",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "us_bonds": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "防守",
+        "strategy_direction": "防守",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "mid_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "short_term": {
+            "pct": null,
+            "holdings": []
+          },
+          "total": null
+        }
+      },
+      "forex": {
+        "market_view": null,
+        "key_logic": null,
+        "strategy": "观望",
+        "strategy_direction": "观望",
+        "operations": {
+          "buys": [],
+          "sells": []
+        },
+        "positions": {
+          "long_term": {
+            "pct": null,
+            "holdings": []
           },
           "mid_term": {
             "pct": null,
